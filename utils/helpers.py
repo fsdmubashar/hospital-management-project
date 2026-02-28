@@ -4,21 +4,24 @@ import os
 import shutil
 import random
 import string
+from logging.handlers import RotatingFileHandler
 from datetime import datetime
 from pathlib import Path
 
 # ─── Logging ───────────────────────────────────────────────────────────────────
 LOG_DIR = Path("logs")
 LOG_DIR.mkdir(exist_ok=True)
+PRODUCTION_LOG = LOG_DIR / "production.log"
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    handlers=[
-        logging.FileHandler(LOG_DIR / "hms.log"),
-        logging.StreamHandler()
-    ]
+_file_handler = RotatingFileHandler(
+    PRODUCTION_LOG,
+    maxBytes=10 * 1024 * 1024,
+    backupCount=5,
+    encoding="utf-8",
 )
+_file_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
+
+logging.basicConfig(level=logging.INFO, handlers=[_file_handler], force=True)
 logger = logging.getLogger("HMS")
 
 # ─── ID generators ─────────────────────────────────────────────────────────────

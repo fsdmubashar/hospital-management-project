@@ -1,0 +1,53 @@
+.git
+.gitignore
+.dockerignore
+Dockerfile
+docker-compose.yml
+.env
+.env.*
+!.env.example
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+env/
+venv/
+.venv/
+ENV/
+
+# Local databases and runtime artifacts
+*.db
+*.sqlite
+*.sqlite3
+logs/
+backups/
+reports_output/
+mysql_data/
+postgres_data/
+.x11-unix/
+
+# IDE and editor settings
+.vscode/
+.cursor/
+.idea/
+
+# Sensitive material
+*.pem
+*.key
+*.crt
+secrets/
+
+# Test and tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+
+# OS files
+.DS_Store
+Thumbs.db
