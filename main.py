@@ -4,7 +4,10 @@ Entry point: main.py
 """
 import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(BASE_DIR))
 
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
@@ -428,23 +431,27 @@ class MainWindow(QMainWindow):
 
 # ─── Entry Point ────────────────────────────────────────────────────────────────
 def main():
-    # Initialize database
-    init_db()
-    seed_default_data()
-    logger.info("Hospital Management System starting...")
+    try:
+        # Initialize database before GUI boot.
+        init_db()
+        seed_default_data()
+        logger.info("Hospital Management System starting...")
 
-    app = QApplication(sys.argv)
-    app.setApplicationName("Hospital Management System")
-    app.setApplicationVersion("1.0.0")
-    app.setStyleSheet(APP_STYLE)
+        app = QApplication(sys.argv)
+        app.setApplicationName("Hospital Management System")
+        app.setApplicationVersion("1.0.0")
+        app.setStyleSheet(APP_STYLE)
 
-    # Set default font
-    font = QFont("Segoe UI", 10)
-    app.setFont(font)
+        # Set default font
+        font = QFont("Segoe UI", 10)
+        app.setFont(font)
 
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+        window = MainWindow()
+        window.show()
+        sys.exit(app.exec())
+    except Exception:
+        logger.exception("Fatal startup failure.")
+        raise
 
 
 if __name__ == "__main__":

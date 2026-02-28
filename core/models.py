@@ -8,10 +8,15 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from sqlalchemy.sql import func
+from sqlalchemy.engine import make_url
 import enum
 import os
+import logging
+from pathlib import Path
 
 Base = declarative_base()
+logger = logging.getLogger("HMS")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 # ─────────────────────────────────────────────
 #  Enums
@@ -272,12 +277,54 @@ class SalaryRecord(Base):
 # ─────────────────────────────────────────────
 #  DB setup
 # ─────────────────────────────────────────────
-DB_URL = os.environ.get("HMS_DB_URL", "sqlite:///hospital.db")
-engine = create_engine(DB_URL, echo=False)
+def _normalize_db_url(db_url: str) -> str:
+    """Normalize driver prefixes so DB switching works via env only."""
+    if db_url.startswith("mysql://"):
+        return db_url.replace("mysql://", "mysql+pymysql://", 1)
+    if db_url.startswith("mariadb://"):
+        return db_url.replace("mariadb://", "mysql+pymysql://", 1)
+    if db_url.startswith("postgres://"):
+        return db_url.replace("postgres://", "postgresql+psycopg2://", 1)
+    if db_url.startswith("postgresql://"):
+        return db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
+    return db_url
+
+
+def _secure_sqlite_path(db_url: str) -> None:
+    if not db_url.startswith("sqlite"):
+        return
+    try:
+        url = make_url(db_url)
+        if not url.database:
+            return
+        db_path = Path(url.database)
+        if not db_path.is_absolute():
+            db_path = PROJECT_ROOT / db_path
+        db_path.parent.mkdir(parents=True, exist_ok=True)
+        db_path.touch(exist_ok=True)
+        db_path.chmod(0o600)
+    except Exception:
+        # Keep app startup resilient even when filesystem permissions vary by host mount.
+        logger.exception("Unable to enforce SQLite file permissions.")
+
+
+RAW_DB_URL = os.getenv("HMS_DB_URL") or "sqlite:///hospital.db"
+DB_URL = _normalize_db_url(RAW_DB_URL)
+_secure_sqlite_path(DB_URL)
+
+engine = create_engine(
+    DB_URL,
+    echo=False,
+    pool_pre_ping=not DB_URL.startswith("sqlite"),
+)
 SessionLocal = sessionmaker(bind=engine)
 
 def init_db():
-    Base.metadata.create_all(engine)
+    try:
+        Base.metadata.create_all(engine)
+    except Exception as exc:
+        logger.exception("Database initialization failed.")
+        raise RuntimeError("Database initialization failed. Verify HMS_DB_URL and credentials.") from exc
 
 def get_session():
     return SessionLocal()

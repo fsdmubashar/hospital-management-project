@@ -1,0 +1,63 @@
+services:
+  hospital-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_UID: ${UID:-1000}
+        APP_GID: ${GID:-1000}
+    container_name: hospital-management-app
+    user: "${UID:-1000}:${GID:-1000}"
+    environment:
+      DISPLAY: ${DISPLAY}
+      QT_X11_NO_MITSHM: "1"
+      HMS_DB_URL: ${HMS_DB_URL:-sqlite:///hospital.db}
+    volumes:
+      - ./.x11-unix:/tmp/.X11-unix:ro
+      - ./hospital.db:/app/hospital.db
+      - ./reports_output:/app/reports_output
+      - ./logs:/app/logs
+      - ./backups:/app/backups
+    working_dir: /app
+    command: ["python", "main.py"]
+    mem_limit: 1g
+    cpus: 1.0
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.4
+    profiles: ["debug"]
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-hospital_db}
+      MYSQL_USER: ${MYSQL_USER:-hospital_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-hospital_pass}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-change_me_root_password}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-change_me_root_password}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    profiles: ["debug"]
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-hospital_db}
+      POSTGRES_USER: ${POSTGRES_USER:-hospital_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hospital_pass}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-hospital_user} -d ${POSTGRES_DB:-hospital_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
