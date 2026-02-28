@@ -1,12 +1,15 @@
-# 🏥 Hospital Management System - Dockerized
+# 🏥 Hospital Management System - Dockerized Application
 
 <div align="center">
 
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3.10-yellow?style=for-the-badge&logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.10+-yellow?style=for-the-badge&logo=python&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?style=for-the-badge&logo=mysql&logoColor=white)
+![Docker Compose](https://img.shields.io/badge/Docker_Compose-2.0-blue?style=for-the-badge&logo=docker&logoColor=white)
 
-**Complete Hospital Management System with Docker Containers**
+**A Complete Hospital Management System with Docker Containerization**
+
+[Features](#-features) • [Architecture](#-architecture) • [Quick Start](#-quick-start) • [Deployment](#-deployment-commands) • [API Docs](#-api-documentation)
 
 </div>
 
@@ -15,11 +18,16 @@
 ## 📋 Overview
 
 Hospital Management System jo Docker containers mein deploy hota hai with:
-- Patient Management
-- Doctor Management  
-- Appointment Scheduling
-- MySQL Database
-- RESTful API
+- ✅ Patient management
+- ✅ Doctor management
+- ✅ Appointment scheduling
+- ✅ Medical records management
+- ✅ Billing system
+- ✅ User authentication
+- ✅ RESTful API
+- ✅ MySQL database
+- ✅ Docker containerization
+- ✅ Production-ready setup
 
 ---
 
@@ -31,6 +39,42 @@ Hospital Management System jo Docker containers mein deploy hota hai with:
 git clone https://github.com/fsdmubashar/hospital-management-project.git && \
 cd hospital-management-project && \
 docker-compose up --build -d
+```
+
+---
+
+## 🏗️ Architecture
+
+### System Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   Hospital Management System             │
+│                                                          │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
+│  │   Frontend   │  │   Backend    │  │   Database   │ │
+│  │  Container   │◄─┤  Container   │◄─┤  Container   │ │
+│  │              │  │              │  │              │ │
+│  │  Port: 3000  │  │  Port: 8000  │  │  Port: 3306  │ │
+│  └──────────────┘  └──────────────┘  └──────────────┘ │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Docker Network Architecture
+
+```
+┌──────────────────────────────────────────────────────┐
+│              Docker Bridge Network                    │
+│                                                       │
+│  ┌──────────────┐   ┌──────────────┐   ┌─────────┐ │
+│  │   Web App    │   │   API Server │   │  MySQL  │ │
+│  │  Container   │◄─►│  Container   │◄─►│  DB     │ │
+│  │              │   │              │   │         │ │
+│  │ nginx/apache │   │ Python/Node  │   │ MySQL   │ │
+│  └──────────────┘   └──────────────┘   └─────────┘ │
+│                                                       │
+└──────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -155,7 +199,7 @@ ENV TERM=xterm-256color
 UI terminal support zaroori hai taake:
 - ✅ Interactive commands properly run ho sakein
 - ✅ Terminal-based tools (nano, vim) kaam karein
-- ✅ Color output properly display ho
+- ✅ Color output properly displays ho
 - ✅ Ncurses-based applications run ho sakein
 - ✅ Python interactive shell properly kaam kare
 
@@ -237,20 +281,55 @@ docker-compose exec -T database mysql -u hospital_user -p hospital_db < backup.s
 
 ---
 
-## 📁 Basic Project Structure
+## 📁 Project Structure
 
 ```
 hospital-management-project/
-├── backend/
-│   ├── Dockerfile              # Ubuntu image with UI terminal support
-│   ├── requirements.txt
-│   └── manage.py
-├── frontend/
+│
+├── backend/                      # Backend application
 │   ├── Dockerfile
-│   └── package.json
-├── docker-compose.yml
-├── .env.example
-└── README.md
+│   ├── requirements.txt
+│   ├── manage.py
+│   ├── hospital/
+│   │   ├── __init__.py
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── patients/
+│   │   ├── models.py
+│   │   ├── views.py
+│   │   ├── serializers.py
+│   │   └── urls.py
+│   ├── doctors/
+│   │   ├── models.py
+│   │   ├── views.py
+│   │   ├── serializers.py
+│   │   └── urls.py
+│   └── appointments/
+│       ├── models.py
+│       ├── views.py
+│       ├── serializers.py
+│       └── urls.py
+│
+├── frontend/                     # Frontend application
+│   ├── Dockerfile
+│   ├── package.json
+│   ├── public/
+│   └── src/
+│       ├── components/
+│       ├── pages/
+│       ├── services/
+│       └── App.js
+│
+├── database/                     # Database scripts
+│   ├── init.sql
+│   └── seed.sql
+│
+├── docker-compose.yml           # Docker Compose configuration
+├── .env.example                 # Environment variables template
+├── .gitignore                   # Git ignore rules
+├── README.md                    # This file
+└── LICENSE                      # MIT License
 ```
 
 ---
@@ -321,7 +400,29 @@ git push origin main
 
 ## 📄 License
 
-MIT License - Copyright (c) 2025 Muhammad Mubashar Karamat Ali
+MIT License
+
+```
+Copyright (c) 2025 Muhammad Mubashar Karamat Ali
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
 
 ---
 
@@ -336,8 +437,45 @@ MIT License - Copyright (c) 2025 Muhammad Mubashar Karamat Ali
 
 ---
 
+## 📞 Contact
+
+**Muhammad Mubashar Karamat Ali**
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/mubashar-karamat-833457245/)
+[![Email](https://img.shields.io/badge/Email-Contact-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:city.mubashar@gmail.com)
+[![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/fsdmubashar)
+[![Medium](https://img.shields.io/badge/Medium-Follow-12100E?style=for-the-badge&logo=medium&logoColor=white)](https://medium.com/@city.mubashar)
+
+**Project Link:** [https://github.com/fsdmubashar/hospital-management-project](https://github.com/fsdmubashar/hospital-management-project)
+
+---
+
+## 🙏 Acknowledgments
+
+- Docker team for containerization platform
+- Python/Django community
+- React.js team
+- MySQL team
+- Open source contributors
+
+---
+
+## 📚 Additional Resources
+
+- [Docker Documentation](https://docs.docker.com/)
+- [Docker Compose Documentation](https://docs.docker.com/compose/)
+- [MySQL Documentation](https://dev.mysql.com/doc/)
+- [Django Documentation](https://docs.djangoproject.com/)
+- [React Documentation](https://react.dev/)
+
+---
+
 <div align="center">
 
-**Made with ❤️ by Muhammad Mubashar Karamat Ali**
+**⭐ If you find this project helpful, please give it a star!**
+
+**Made with ❤️ by [Muhammad Mubashar Karamat Ali](https://github.com/fsdmubashar)**
+
+![Visitors](https://komarev.com/ghpvc/?username=fsdmubashar-hospital&color=brightgreen&style=for-the-badge)
 
 </div>
